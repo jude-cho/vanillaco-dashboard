@@ -383,6 +383,16 @@
       z-index: 2;
       display: block;
     }
+    .ig-footer-cover {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: linear-gradient(to bottom, transparent, var(--pink-light) 60%);
+      z-index: 1;
+      pointer-events: none;
+    }
 
     /* ══════════════ MODAL ══════════════ */
     .overlay {
@@ -1304,8 +1314,9 @@ function makeCard(inf) {
     var igEmbed = igEmbedUrl(c.url);
     if (igEmbed) {
       var igContent = '<iframe class="ig-embed-frame" src="' + esc(igEmbed) + '" frameborder="0" scrolling="no" allowtransparency="true" title="Instagram"></iframe>'
+        + '<div class="ig-footer-cover"></div>'
         + (c.url ? '<a class="ig-link-overlay" href="' + esc(c.url) + '" target="_blank" rel="noopener"></a>' : '')
-        + '<span class="yt-badge ig-badge" style="z-index:3;">IG</span>';
+        + '<span class="yt-badge ig-badge" style="z-index:4;">IG</span>';
       return '<div class="thumb-item">' + igContent + '</div>';
     }
     var src = c.manualThumb || c.ytThumb || '';
