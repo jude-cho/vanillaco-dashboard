@@ -367,7 +367,22 @@
       pointer-events: none;
     }
     .ig-badge { background: rgba(193,53,132,.85) !important; }
-    .thumb-item iframe { width: 100%; height: 100%; border: none; display: block; }
+    .ig-embed-frame {
+      position: absolute;
+      top: -70px;
+      left: 0;
+      width: 100%;
+      height: calc(100% + 70px);
+      border: none;
+      display: block;
+      pointer-events: none;
+    }
+    .ig-link-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: block;
+    }
 
     /* ══════════════ MODAL ══════════════ */
     .overlay {
@@ -1288,10 +1303,10 @@ function makeCard(inf) {
   var thumbsHtml = (inf.contents || []).slice(0,3).map(function(c) {
     var igEmbed = igEmbedUrl(c.url);
     if (igEmbed) {
-      var igInner = '<iframe src="' + esc(igEmbed) + '" frameborder="0" scrolling="no" allowtransparency="true" style="pointer-events:none;" title="Instagram"></iframe>'
-        + '<span class="yt-badge ig-badge">IG</span>';
-      var igWrap = c.url ? '<a href="' + esc(c.url) + '" target="_blank" rel="noopener" style="display:block;width:100%;height:100%;">' + igInner + '</a>' : igInner;
-      return '<div class="thumb-item">' + igWrap + '</div>';
+      var igContent = '<iframe class="ig-embed-frame" src="' + esc(igEmbed) + '" frameborder="0" scrolling="no" allowtransparency="true" title="Instagram"></iframe>'
+        + (c.url ? '<a class="ig-link-overlay" href="' + esc(c.url) + '" target="_blank" rel="noopener"></a>' : '')
+        + '<span class="yt-badge ig-badge" style="z-index:3;">IG</span>';
+      return '<div class="thumb-item">' + igContent + '</div>';
     }
     var src = c.manualThumb || c.ytThumb || '';
     var badge = (c.ytThumb && !c.manualThumb) ? '<span class="yt-badge">YT</span>' : '';
