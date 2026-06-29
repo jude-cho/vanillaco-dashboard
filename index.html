@@ -1769,6 +1769,15 @@ async function saveToGist() {
   }
 }
 
+/* GitHub API truncates file.content at 1MB — use raw_url for large files */
+async function fetchGistContent(file, token) {
+  if (!file.truncated) return file.content;
+  var headers = token ? { 'Authorization': 'token ' + token } : {};
+  var r = await fetch(file.raw_url, { headers: headers });
+  if (!r.ok) throw new Error('대용량 파일 로드 실패');
+  return await r.text();
+}
+
 async function loadFromGist() {
   var token  = document.getElementById('ghToken').value.trim() || getGhToken();
   var gistId = getGhGistId();
@@ -1784,7 +1793,8 @@ async function loadFromGist() {
     var data    = await resp.json();
     var file    = data.files['vanillaco_influencers.json'];
     if (!file)  throw new Error('Gist에 데이터 파일이 없습니다');
-    var parsed  = JSON.parse(file.content);
+    var content = await fetchGistContent(file, token);
+    var parsed  = JSON.parse(content);
     if (!parsed.tabs) throw new Error('파일 형식이 올바르지 않습니다');
     var total   = parsed.tabs.reduce(function(s,t){ return s+(t.influencers?t.influencers.length:0); }, 0);
     if (!confirm('Gist에서 ' + total + '명의 데이터를 불러옵니다.\n현재 데이터를 덮어쓸까요?')) return;
@@ -1832,10 +1842,11 @@ async function loadFromUrlGist() {
     showToast('공유 데이터를 불러오는 중...');
     var resp = await fetch('https://api.github.com/gists/' + urlGistId);
     if (!resp.ok) throw new Error('Gist를 찾을 수 없습니다 (URL 확인 필요)');
-    var data = await resp.json();
-    var file = data.files['vanillaco_influencers.json'];
-    if (!file) throw new Error('데이터 파일이 없습니다');
-    appData = JSON.parse(file.content);
+    var data    = await resp.json();
+    var file    = data.files['vanillaco_influencers.json'];
+    if (!file)  throw new Error('데이터 파일이 없습니다');
+    var content = await fetchGistContent(file, null); /* public gist — no token needed */
+    appData = JSON.parse(content);
     validateAppData();
     renderTabs();
     renderCards();
