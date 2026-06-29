@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>바닐라코 인플루언서 리스트업</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink:       #F9BBC4;
+      --pink-light: #FDE8EC;
+      --pink-mid:   #F0A0B0;
+      --rose:       #D05070;
+      --rose-dark:  #A83050;
+      --rose-deep:  #7A1835;
+      --memo-bg:    #C04868;
+      --bg:         #FFF5F7;
+      --white:      #FFFFFF;
+      --border:     #F5CDD6;
+      --text:       #2D0F1A;
+      --text-mid:   #7A3048;
+      --text-light: #C090A0;
+      --shadow:     rgba(192,72,104,.12);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ══════════════ HEADER ══════════════ */
+    .header {
+      background: var(--white);
+      border-bottom: 1.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-b {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--rose);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -1px;
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .count-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--rose);
+      background: var(--pink-light);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .btn-add-inf {
+      background: var(--rose);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .18s, transform .1s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-add-inf:hover  { background: var(--rose-dark); }
+    .btn-add-inf:active { transform: scale(.97); }
+
+    /* ── Tab bar ── */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 32px 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-mid);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color .15s, background .15s, color .15s, box-shadow .15s;
+      user-select: none;
+    }
+    .tab:hover {
+      border-color: var(--pink-mid);
+      background: var(--pink-light);
+      color: var(--rose-dark);
+    }
+    .tab.active {
+      background: var(--pink);
+      border-color: var(--pink-mid);
+      color: var(--rose-deep);
+      box-shadow: 0 2px 8px rgba(249,187,196,.5);
+    }
+    .tab-name { pointer-events: none; }
+    .tab-actions {
+      display: none;
+      align-items: center;
+      gap: 2px;
+      margin-left: 2px;
+    }
+    .tab:hover .tab-actions,
+    .tab.active .tab-actions {
+      display: flex;
+    }
+    .tab-btn {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,.6);
+      color: var(--rose-deep);
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+      transition: background .15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,.9); }
+    .tab-btn.del-tab:hover { background: #fde8e8; color: #c62828; }
+
+    .btn-add-tab {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px dashed var(--pink-mid);
+      background: transparent;
+      color: var(--rose);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color .15s, background .15s;
+    }
+    .btn-add-tab:hover { border-color: var(--rose); background: var(--pink-light); }
+
+    /* ══════════════ GRID ══════════════ */
+    .grid-wrap { padding: 28px 32px; max-width: 1440px; margin: 0 auto; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 100px 20px;
+      color: var(--text-light);
+    }
+    .empty-state .ei { font-size: 52px; margin-bottom: 14px; }
+    .empty-state p { font-size: 15px; }
+
+    /* ══════════════ CARD ══════════════ */
+    .card {
+      background: var(--white);
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 16px var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(192,72,104,.18);
+    }
+
+    .card-top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+      padding: 10px 12px 0;
+    }
+    .btn-card {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-light);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: inherit;
+      transition: background .15s, color .15s;
+    }
+    .btn-card.edit:hover { background: var(--pink-light); color: var(--rose-dark); }
+    .btn-card.del:hover  { background: #fde8e8; color: #c62828; }
+
+    /* Card header */
+    .card-header { padding: 6px 16px 12px; display: flex; gap: 12px; align-items: flex-start; }
+
+    .profile-pic {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid var(--pink);
+      flex-shrink: 0;
+      display: block;
+    }
+    .profile-placeholder {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 2.5px solid var(--pink);
+      flex-shrink: 0;
+    }
+
+    .card-info { flex: 1; min-width: 0; padding-top: 2px; }
+    .card-username {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      word-break: break-all;
+    }
+    .card-username:hover { color: var(--rose); }
+    .link-icon { font-size: 11px; opacity: .5; }
+
+    .cat-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .cat-tag {
+      background: var(--pink-light);
+      color: var(--rose-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--pink);
+    }
+
+    /* Stats */
+    .stats-row { display: flex; gap: 8px; padding: 0 16px 12px; }
+    .stat-box {
+      flex: 1;
+      background: var(--rose);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .stat-label { font-size: 11px; opacity: .85; margin-bottom: 3px; }
+    .stat-value { font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
+
+    /* Memo */
+    .memo-box {
+      background: var(--memo-bg);
+      color: #fff;
+      margin: 0 16px 12px;
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+      min-height: 62px;
+      word-break: keep-all;
+      white-space: pre-wrap;
+    }
+    .memo-box.empty {
+      opacity: .45;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: normal;
+    }
+
+    /* Content thumbnails */
+    .content-row {
+      display: flex;
+      gap: 5px;
+      padding: 0 16px 16px;
+      margin-top: auto;
+    }
+    .thumb-item {
+      flex: 1;
+      aspect-ratio: 3/4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--pink-light);
+      position: relative;
+      border: 1px solid var(--border);
+    }
+    .thumb-item a { display: block; width: 100%; height: 100%; }
+    .thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-item:hover img { opacity: .88; }
+    .thumb-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--pink-mid);
+      font-size: 20px;
+    }
+    .yt-badge {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      background: rgba(0,0,0,.6);
+      color: #fff;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    /* ══════════════ MODAL ══════════════ */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(45,15,26,.4);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(2px);
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 28px 28px 22px;
+      box-shadow: 0 24px 64px rgba(120,20,50,.2);
+      border: 1px solid var(--border);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1.5px solid var(--pink-light);
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .btn-close {
+      background: var(--pink-light);
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--rose-dark);
+      transition: background .15s;
+    }
+    .btn-close:hover { background: var(--pink); }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--text-light); }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(208,80,112,.1);
+    }
+    .form-textarea { resize: vertical; min-height: 82px; line-height: 1.55; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    /* Profile upload */
+    .profile-upload {
+      border: 2px dashed var(--pink-mid);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+      position: relative;
+      display: block;
+      background: var(--bg);
+    }
+    .profile-upload:hover { border-color: var(--rose); background: var(--pink-light); }
+    .profile-upload input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+    }
+    .upload-preview-img {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid var(--pink);
+      margin: 0 auto 8px;
+      display: none;
+    }
+    .upload-hint { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    /* Category */
+    .cat-select-wrap {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: var(--bg);
+    }
+    .cat-checkboxes { display: flex; flex-wrap: wrap; gap: 7px; }
+    .cat-cb-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-mid);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+    }
+    .cat-cb-label:hover { border-color: var(--pink-mid); background: var(--pink-light); color: var(--rose-dark); }
+    .cat-cb-label input { display: none; }
+    .cat-cb-label.checked {
+      border-color: var(--rose);
+      background: var(--pink);
+      color: var(--rose-deep);
+      font-weight: 700;
+    }
+
+    .add-cat-row {
+      display: flex; gap: 8px;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--pink-light);
+    }
+    .add-cat-row input { flex: 1; padding: 7px 11px; font-size: 13px; }
+    .btn-add-cat {
+      background: var(--rose);
+      color: #fff; border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn-add-cat:hover { background: var(--rose-dark); }
+
+    /* Content inputs */
+    .content-link-item {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 9px;
+    }
+    .content-num {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--pink);
+      color: var(--rose-deep);
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .content-link-item .url-input { flex: 1; padding: 8px 11px; font-size: 13px; }
+    .thumb-mini {
+      width: 42px; height: 42px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1.5px solid var(--border);
+      display: none; flex-shrink: 0;
+    }
+    .thumb-mini.show { display: block; }
+    .btn-img-upload {
+      flex-shrink: 0;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 13px; cursor: pointer;
+      position: relative; overflow: hidden;
+      white-space: nowrap;
+      transition: border-color .15s, background .15s;
+      display: inline-block; color: var(--text-mid);
+    }
+    .btn-img-upload:hover { border-color: var(--rose); background: var(--pink-light); }
+    .btn-img-upload input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0;
+    }
+
+    /* Section divider */
+    .sec-div {
+      font-size: 11px; font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin: 20px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sec-div::after { content:''; flex:1; height:1px; background: var(--pink-light); }
+
+    .thumb-note { font-size: 11px; color: var(--text-light); margin-top: 6px; line-height: 1.6; }
+
+    /* Modal footer */
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding-top: 18px; margin-top: 6px;
+      border-top: 1.5px solid var(--pink-light);
+    }
+    .btn-cancel {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text-mid);
+      padding: 10px 22px; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-cancel:hover { background: var(--bg); }
+    .btn-save {
+      background: var(--rose);
+      color: #fff; border: none;
+      padding: 10px 26px; border-radius: 10px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background .18s;
+    }
+    .btn-save:hover { background: var(--rose-dark); }
+
+    /* ── Pricing toggle ── */
+    .toggle-pricing {
+      width: 100%;
+      border: none;
+      background: var(--bg);
+      border-top: 1.5px solid var(--border);
+      color: var(--text-mid);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 9px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .15s, color .15s;
+      letter-spacing: .2px;
+    }
+    .toggle-pricing:hover { background: var(--pink-light); color: var(--rose-dark); }
+    .toggle-arrow {
+      font-size: 10px;
+      transition: transform .22s;
+      display: inline-block;
+    }
+    .toggle-pricing.open .toggle-arrow { transform: rotate(180deg); }
+
+    /* ── Pricing panel ── */
+    .pricing-panel {
+      display: none;
+      padding: 14px 16px 16px;
+      background: var(--white);
+      border-top: 1px solid var(--pink-light);
+    }
+    .pricing-panel.open { display: block; }
+
+    .price-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin: 12px 0 6px;
+    }
+    .price-section-title:first-child { margin-top: 0; }
+
+    .price-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 5px;
+    }
+    .price-item-label { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .price-item-label small { font-size: 11px; color: var(--text-light); font-weight: 400; display: block; }
+    .price-item-value { font-size: 14px; font-weight: 800; color: var(--rose); letter-spacing: -.3px; }
+
+    .price-notice {
+      margin-top: 10px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .price-memo {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-mid);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: keep-all;
+    }
+
+    /* ── Pricing modal fields ── */
+    .price-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+    .price-field-row-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-mid);
+      white-space: nowrap;
+      min-width: 48px;
+    }
+    .price-field-row input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+    }
+    .price-field-row input::placeholder { color: var(--text-light); }
+
+    .vat-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-mid);
+      cursor: pointer;
+      user-select: none;
+    }
+    .vat-toggle input { accent-color: var(--rose); cursor: pointer; }
+
+    /* ── Header utility buttons ── */
+    .btn-icon {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text-mid);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s, border-color .15s, color .15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-icon:hover { background: var(--pink-light); border-color: var(--pink-mid); color: var(--rose-dark); }
+    .btn-icon.gh-connected { border-color: #22c55e; color: #15803d; background: #f0fdf4; }
+    .btn-icon.gh-connected:hover { background: #dcfce7; }
+    .btn-icon.share { border-color: var(--rose); color: var(--rose); background: var(--pink-light); }
+    .btn-icon.share:hover { background: var(--pink); }
+
+    /* ── Read-only banner ── */
+    .readonly-banner {
+      background: #fffbeb;
+      border-bottom: 1.5px solid #fde68a;
+      padding: 8px 32px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a2e;
+      color: #fff;
+      padding: 11px 22px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity .25s, transform .25s;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── GitHub modal ── */
+    .gh-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(45,15,26,.4);
+      z-index: 600;
+      align-items: center; justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(2px);
+    }
+    .gh-overlay.open { display: flex; }
+    .gh-modal {
+      background: var(--white);
+      border-radius: 18px;
+      width: 100%; max-width: 480px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      border: 1px solid var(--border);
+    }
+    .gh-modal h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .gh-desc { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 20px; }
+    .gh-desc a { color: var(--rose); }
+    .gh-status {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .gh-status.connected { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+    .gh-status.connected a { color: #15803d; }
+    .gh-status.pending { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .gh-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .btn-outline {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--text-mid);
+      padding: 9px 16px; border-radius: 9px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-outline:hover { background: var(--bg); border-color: var(--pink-mid); color: var(--rose-dark); }
+    .gh-how {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px;
+      font-size: 12px; color: var(--text-mid); line-height: 1.7;
+      margin-top: 14px;
+    }
+    .gh-how b { color: var(--rose); }
+
+    /* Responsive */
+    @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+      .grid-wrap { padding: 16px; }
+      .header-top { padding: 14px 20px 10px; }
+      .tab-bar { padding: 0 20px 12px; }
+      .form-row { flex-direction: column; gap: 0; }
+      .brand h1 { font-size: 16px; }
+      .btn-icon span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="header">
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-b">B</div>
+      <h1>바닐라코 인플루언서 리스트업</h1>
+    </div>
+    <div class="header-right">
+      <button class="btn-icon" onclick="exportData()" title="JSON 파일로 백업">⬇ <span>백업</span></button>
+      <button class="btn-icon" onclick="importData()" title="JSON 파일로 복원">⬆ <span>복원</span></button>
+      <button class="btn-icon" id="ghBtn" onclick="openGhModal()" title="GitHub Gist 동기화">☁ <span>GitHub</span></button>
+      <button class="btn-icon share" id="shareBtn" onclick="copyShareLink()" title="팀 공유 링크 복사" style="display:none">🔗 <span>공유 링크</span></button>
+      <span class="count-badge" id="countBadge" style="display:none"></span>
+      <button class="btn-add-inf" id="addInfBtn" onclick="openModal()">＋ 인플루언서 추가</button>
+    </div>
+  </div>
+
+  <!-- Read-only banner (shown when opened via share link) -->
+  <div class="readonly-banner" id="readonlyBanner" style="display:none">
+    👁 보기 전용 — 팀 공유 링크로 열린 화면입니다. 데이터를 수정하려면 원본 파일을 열어주세요.
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar" id="tabBar">
+    <!-- rendered by JS -->
+    <button class="btn-add-tab" onclick="addTab()">＋ 탭 추가</button>
+  </div>
+</header>
+
+<!-- ══ GitHub Modal ══ -->
+<div class="gh-overlay" id="ghOverlay">
+  <div class="gh-modal">
+    <h3>☁ GitHub Gist 연동</h3>
+    <p class="gh-desc">
+      데이터를 GitHub Gist(비공개)에 자동 저장합니다.<br>
+      브라우저가 바뀌어도 데이터가 유지됩니다.
+    </p>
+    <div class="form-group">
+      <label class="form-label">GitHub Personal Access Token</label>
+      <input type="password" class="form-input" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxx">
+    </div>
+    <div id="ghStatus" style="display:none" class="gh-status"></div>
+    <div class="gh-how">
+      <b>토큰 발급 방법:</b><br>
+      GitHub → Settings → Developer settings →<br>
+      Personal access tokens → Tokens (classic) → Generate new token<br>
+      → <b>gist</b> 항목만 체크 후 생성
+    </div>
+    <div class="gh-actions">
+      <button class="btn-outline" onclick="closeGhModal()">닫기</button>
+      <button class="btn-outline" onclick="loadFromGist()">☁ 불러오기</button>
+      <button class="btn-save" onclick="saveToGist()">☁ Gist에 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GRID ══ -->
+<div class="grid-wrap">
+  <div class="grid" id="grid">
+    <div class="empty-state" id="emptyState">
+      <div class="ei">🌸</div>
+      <p>＋ 인플루언서 추가 버튼을 눌러 첫 번째 항목을 등록하세요</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">인플루언서 추가</span>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Profile photo -->
+    <div class="form-group">
+      <label class="form-label">프로필 사진</label>
+      <label class="profile-upload">
+        <input type="file" accept="image/*" id="profileFileInput">
+        <img id="profilePreviewImg" class="upload-preview-img" alt="">
+        <div id="profileUploadIcon" style="font-size:26px">📷</div>
+        <div class="upload-hint" id="profileUploadHint">클릭하여 사진 업로드</div>
+      </label>
+    </div>
+
+    <!-- Username + URL -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">인플루언서 아이디 *</label>
+        <input type="text" class="form-input" id="inUsername" placeholder="its.joeykim">
+      </div>
+      <div class="form-group">
+        <label class="form-label">프로필 링크 (URL)</label>
+        <input type="url" class="form-input" id="inProfileUrl" placeholder="https://www.instagram.com/...">
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="form-group">
+      <label class="form-label">카테고리 (중복 선택 가능)</label>
+      <div class="cat-select-wrap">
+        <div class="cat-checkboxes" id="catCheckboxes"></div>
+        <div class="add-cat-row">
+          <input type="text" class="form-input" id="newCatInput" placeholder="새 카테고리 직접 추가...">
+          <button class="btn-add-cat" onclick="addCat()">+ 추가</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">팔로워</label>
+        <input type="text" class="form-input" id="inFollowers" placeholder="예) 7.8만">
+      </div>
+      <div class="form-group">
+        <label class="form-label">평균 조회수</label>
+        <input type="text" class="form-input" id="inAvgViews" placeholder="예) 7만">
+      </div>
+    </div>
+
+    <!-- Memo -->
+    <div class="form-group">
+      <label class="form-label">후보 선정 이유 및 예상 발행 콘텐츠</label>
+      <textarea class="form-textarea" id="inMemo" placeholder="후보 선정 이유, 예상 발행 콘텐츠 방향 등을 자유롭게 입력하세요..."></textarea>
+    </div>
+
+    <!-- Content links -->
+    <div class="sec-div">우수 콘텐츠 3종</div>
+    <div id="contentInputsWrap"></div>
+    <p class="thumb-note">
+      · YouTube 링크 입력 시 썸네일이 자동 연동됩니다.<br>
+      · 인스타그램·틱톡은 📎 버튼으로 썸네일 이미지를 직접 업로드하세요.
+    </p>
+
+    <!-- Pricing -->
+    <div class="sec-div">단가 정보</div>
+
+    <div class="form-group">
+      <label class="form-label">기본 단가</label>
+      <div class="price-field-row">
+        <span class="price-field-row-label">콘텐츠</span>
+        <input type="text" id="inBaseType" placeholder="예) 릴스 1건">
+      </div>
+      <div class="price-field-row">
+        <span class="price-field-row-label">금액</span>
+        <input type="text" id="inBasePrice" placeholder="예) 120만원">
+      </div>
+      <label class="vat-toggle">
+        <input type="checkbox" id="inBaseVat" checked> VAT 별도
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">2차 활용 (라이선스)</label>
+      <div class="price-field-row">
+        <span class="price-field-row-label">1개월</span>
+        <input type="text" id="inLic1m" placeholder="예) 별도 협의">
+      </div>
+      <div class="price-field-row">
+        <span class="price-field-row-label">3개월</span>
+        <input type="text" id="inLic3m" placeholder="예) 별도 협의">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">단가 메모</label>
+      <textarea class="form-textarea" id="inPriceMemo" placeholder="단가 관련 메모..." style="min-height:60px"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">특이사항 / 노티</label>
+      <input type="text" class="form-input" id="inNotice" placeholder="예) 기획안 필요 시 사전 노티 필수">
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-save" onclick="saveInfluencer()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════ SHARE / READ-ONLY ════════════ */
+var urlParams   = new URLSearchParams(window.location.search);
+var urlGistId   = urlParams.get('gist') || '';
+var readOnlyMode = !!urlGistId;
+
+/* ════════════ DATA ════════════ */
+var STORE_KEY   = 'vanillaco_v1';   // localStorage fallback key
+var IDB_NAME    = 'vanillacoIDB';
+var IDB_STORE   = 'appData';
+var IDB_KEY     = 'main';
+var DEFAULT_CATS = ['메이크업','스킨케어','브이로그','패션','푸드','라이프스타일'];
+
+var appData = {
+  tabs: [],
+  activeTabId: '',
+  customCats: []
+};
+var _idb = null;
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+/* ── IndexedDB helpers ── */
+function openIDB() {
+  if (_idb) return Promise.resolve(_idb);
+  return new Promise(function(resolve, reject) {
+    var req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = function(e) {
+      e.target.result.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess = function(e) { _idb = e.target.result; resolve(_idb); };
+    req.onerror   = function(e) { reject(e.target.error); };
+  });
+}
+function idbGet() {
+  return openIDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(IDB_KEY);
+      req.onsuccess = function(e) { resolve(e.target.result || null); };
+      req.onerror   = function(e) { reject(e.target.error); };
+    });
+  });
+}
+function idbPut(data) {
+  return openIDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).put(data, IDB_KEY);
+      tx.oncomplete = resolve;
+      tx.onerror    = function(e) { reject(e.target.error); };
+    });
+  });
+}
+
+function validateAppData() {
+  if (!appData.tabs || !appData.tabs.length) {
+    appData.tabs = [{ id: uid(), name: '2026_스킨케어', influencers: [] }];
+  }
+  if (!appData.activeTabId || !appData.tabs.find(function(t){ return t.id === appData.activeTabId; })) {
+    appData.activeTabId = appData.tabs[0].id;
+  }
+  if (!appData.customCats) appData.customCats = [];
+}
+
+/* loadData — returns Promise, tries IndexedDB first, falls back to localStorage */
+function loadData() {
+  return idbGet().then(function(result) {
+    if (result && result.tabs) {
+      appData = result;
+    } else {
+      /* migrate from localStorage on first run with new storage engine */
+      try {
+        var raw = localStorage.getItem(STORE_KEY);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.tabs) appData = parsed;
+        }
+      } catch(e) {}
+    }
+    validateAppData();
+  }).catch(function() {
+    /* IndexedDB unavailable (e.g. private-browsing on some browsers) → use localStorage */
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) { var parsed = JSON.parse(raw); if (parsed && parsed.tabs) appData = parsed; }
+    } catch(e) {}
+    validateAppData();
+  });
+}
+
+/* saveData — skipped in read-only mode; IndexedDB primary */
+function saveData() {
+  if (readOnlyMode) return;
+  idbPut(appData).then(function() {
+    /* keep a lightweight (no images) copy in localStorage as emergency fallback */
+    try {
+      var slim = JSON.parse(JSON.stringify(appData));
+      slim.tabs.forEach(function(tab) {
+        (tab.influencers || []).forEach(function(inf) {
+          if (inf.photo && inf.photo.length > 200) inf.photo = null;
+          (inf.contents || []).forEach(function(c) { if (c.manualThumb && c.manualThumb.length > 200) c.manualThumb = ''; });
+        });
+      });
+      localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+    } catch(e) { /* localStorage full is fine — IndexedDB has the real data */ }
+    autoSyncToGist();
+  }).catch(function(e) {
+    showToast('⚠ 저장 실패: ' + e.message);
+  });
+}
+
+function activeTab() {
+  return appData.tabs.find(function(t){ return t.id === appData.activeTabId; }) || appData.tabs[0];
+}
+
+/* ════════════ TABS ════════════ */
+function renderTabs() {
+  const bar = document.getElementById('tabBar');
+  const addBtn = bar.querySelector('.btn-add-tab');
+  bar.querySelectorAll('.tab').forEach(t => t.remove());
+
+  appData.tabs.forEach(function(tab) {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (tab.id === appData.activeTabId ? ' active' : '');
+    btn.dataset.id = tab.id;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'tab-name';
+    nameSpan.textContent = tab.name;
+
+    const actions = document.createElement('span');
+    actions.className = 'tab-actions';
+
+    const renameBtn = document.createElement('button');
+    renameBtn.className = 'tab-btn';
+    renameBtn.title = '탭 이름 변경';
+    renameBtn.textContent = '✎';
+    renameBtn.addEventListener('click', function(e) { e.stopPropagation(); renameTab(tab.id); });
+
+    actions.appendChild(renameBtn);
+
+    if (appData.tabs.length > 1) {
+      const delBtn = document.createElement('button');
+      delBtn.className = 'tab-btn del-tab';
+      delBtn.title = '탭 삭제';
+      delBtn.textContent = '×';
+      delBtn.addEventListener('click', function(e) { e.stopPropagation(); deleteTab(tab.id); });
+      actions.appendChild(delBtn);
+    }
+
+    btn.appendChild(nameSpan);
+    btn.appendChild(actions);
+    btn.addEventListener('click', function() { switchTab(tab.id); });
+
+    bar.insertBefore(btn, addBtn);
+  });
+}
+
+function switchTab(id) {
+  appData.activeTabId = id;
+  saveData();
+  renderTabs();
+  renderCards();
+}
+
+function addTab() {
+  var name = prompt('새 탭 이름을 입력하세요:', '2026_새캠페인');
+  if (!name || !name.trim()) return;
+  var newTab = { id: uid(), name: name.trim(), influencers: [] };
+  appData.tabs.push(newTab);
+  appData.activeTabId = newTab.id;
+  saveData();
+  renderTabs();
+  renderCards();
+}
+
+function renameTab(id) {
+  var tab = appData.tabs.find(function(t){ return t.id === id; });
+  if (!tab) return;
+  var name = prompt('새 탭 이름을 입력하세요:', tab.name);
+  if (!name || !name.trim()) return;
+  tab.name = name.trim();
+  saveData();
+  renderTabs();
+}
+
+function deleteTab(id) {
+  if (appData.tabs.length <= 1) { alert('마지막 탭은 삭제할 수 없습니다.'); return; }
+  var tab = appData.tabs.find(function(t){ return t.id === id; });
+  var count = tab ? tab.influencers.length : 0;
+  var msg = count > 0
+    ? '이 탭에 인플루언서 ' + count + '명이 있습니다. 탭을 삭제하면 모두 사라집니다. 계속하시겠습니까?'
+    : '이 탭을 삭제하시겠습니까?';
+  if (!confirm(msg)) return;
+  appData.tabs = appData.tabs.filter(function(t){ return t.id !== id; });
+  if (appData.activeTabId === id) appData.activeTabId = appData.tabs[0].id;
+  saveData();
+  renderTabs();
+  renderCards();
+}
+
+/* ════════════ CARDS ════════════ */
+function renderCards() {
+  var grid = document.getElementById('grid');
+  grid.querySelectorAll('.card').forEach(function(c){ c.remove(); });
+
+  var tab = activeTab();
+  var infs = tab ? tab.influencers : [];
+
+  document.getElementById('emptyState').style.display = infs.length ? 'none' : '';
+
+  var badge = document.getElementById('countBadge');
+  if (infs.length) {
+    badge.style.display = '';
+    badge.textContent = '총 ' + infs.length + '명';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  infs.forEach(function(inf){ grid.appendChild(makeCard(inf)); });
+}
+
+function makeCard(inf) {
+  var d = document.createElement('div');
+  d.className = 'card';
+  d.dataset.id = inf.id;
+
+  var pic = inf.photo
+    ? '<img class="profile-pic" src="' + esc(inf.photo) + '" alt="">'
+    : '<div class="profile-placeholder">👤</div>';
+
+  var uname = inf.profileUrl
+    ? '<a class="card-username" href="' + esc(inf.profileUrl) + '" target="_blank" rel="noopener">' + esc(inf.username) + '<span class="link-icon">🔗</span></a>'
+    : '<span class="card-username">' + esc(inf.username) + '</span>';
+
+  var tags = (inf.categories || []).map(function(c){ return '<span class="cat-tag">' + esc(c) + '</span>'; }).join('');
+  var fw = esc(inf.followers || '—');
+  var av = esc(inf.avgViews  || '—');
+
+  var memoText = inf.memo
+    ? esc(inf.memo).replace(/\n/g,'<br>')
+    : '후보 선정 이유 및<br>예상 발행 콘텐츠';
+  var memoCls = inf.memo ? '' : ' empty';
+
+  var thumbsHtml = (inf.contents || []).slice(0,3).map(function(c) {
+    var src = c.manualThumb || c.ytThumb || '';
+    var badge = (c.ytThumb && !c.manualThumb) ? '<span class="yt-badge">YT</span>' : '';
+    if (src) {
+      var img = '<img src="' + esc(src) + '" alt="" loading="lazy">';
+      var inner = c.url ? '<a href="' + esc(c.url) + '" target="_blank" rel="noopener">' + img + '</a>' + badge : img + badge;
+      return '<div class="thumb-item">' + inner + '</div>';
+    }
+    return '<div class="thumb-item"><div class="thumb-empty">＋</div></div>';
+  }).join('');
+
+  var cardActions = readOnlyMode ? '' :
+    '<div class="card-top-actions">'
+      + '<button class="btn-card edit" onclick="openModal(\'' + inf.id + '\')">✏️ 편집</button>'
+      + '<button class="btn-card del" onclick="delCard(\'' + inf.id + '\')">🗑 삭제</button>'
+    + '</div>';
+
+  d.innerHTML =
+    cardActions
+    + '<div class="card-header">'
+      + '<div class="profile-pic-wrap">' + pic + '</div>'
+      + '<div class="card-info">' + uname + '<div class="cat-tags">' + tags + '</div></div>'
+    + '</div>'
+    + '<div class="stats-row">'
+      + '<div class="stat-box"><div class="stat-label">팔로워</div><div class="stat-value">' + fw + '</div></div>'
+      + '<div class="stat-box"><div class="stat-label">평균조회수</div><div class="stat-value">' + av + '</div></div>'
+    + '</div>'
+    + '<div class="memo-box' + memoCls + '">' + memoText + '</div>'
+    + '<div class="content-row">' + thumbsHtml + '</div>'
+    + makePricingToggle(inf);
+
+  return d;
+}
+
+function makePricingToggle(inf) {
+  var p = inf.pricing || {};
+  var panelHtml = '';
+
+  if (p.baseType || p.basePrice) {
+    panelHtml += '<div class="price-section-title">기본 단가</div>';
+    panelHtml += '<div class="price-item">'
+      + '<span class="price-item-label">' + esc(p.baseType || '—')
+      + (p.baseVat ? '<small>VAT 별도</small>' : '') + '</span>'
+      + '<span class="price-item-value">' + esc(p.basePrice || '—') + '</span>'
+      + '</div>';
+  }
+
+  if (p.license1m || p.license3m) {
+    panelHtml += '<div class="price-section-title">2차 활용 (라이선스)</div>';
+    if (p.license1m) panelHtml += '<div class="price-item"><span class="price-item-label">1개월</span><span class="price-item-value">' + esc(p.license1m) + '</span></div>';
+    if (p.license3m) panelHtml += '<div class="price-item"><span class="price-item-label">3개월</span><span class="price-item-value">' + esc(p.license3m) + '</span></div>';
+  }
+
+  if (p.memo) {
+    panelHtml += '<div class="price-section-title">메모</div><div class="price-memo">' + esc(p.memo).replace(/\n/g,'<br>') + '</div>';
+  }
+
+  if (p.notice) {
+    panelHtml += '<div class="price-notice">⚠️ ' + esc(p.notice) + '</div>';
+  }
+
+  if (!panelHtml) {
+    panelHtml = '<div style="text-align:center;padding:14px 0;color:var(--text-light);font-size:12px">단가 정보를 편집하여 입력하세요</div>';
+  }
+
+  return '<button class="toggle-pricing" onclick="togglePricing(this)">'
+    + '💰 단가 정보 <span class="toggle-arrow">▼</span>'
+    + '</button>'
+    + '<div class="pricing-panel">' + panelHtml + '</div>';
+}
+
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function togglePricing(btn) {
+  btn.classList.toggle('open');
+  var panel = btn.nextElementSibling;
+  panel.classList.toggle('open');
+}
+
+function delCard(id) {
+  if (!confirm('이 인플루언서를 삭제하시겠습니까?')) return;
+  var tab = activeTab();
+  if (tab) tab.influencers = tab.influencers.filter(function(x){ return x.id !== id; });
+  saveData();
+  renderCards();
+}
+
+/* ════════════ MODAL ════════════ */
+var editingId  = null;
+var profileB64 = null;
+var cs = newCS();
+
+function newCS() {
+  return [{url:'',ytThumb:'',manualThumb:''},{url:'',ytThumb:'',manualThumb:''},{url:'',ytThumb:'',manualThumb:''}];
+}
+
+function openModal(id) {
+  editingId  = id || null;
+  profileB64 = null;
+  cs = newCS();
+
+  document.getElementById('inUsername').value   = '';
+  document.getElementById('inProfileUrl').value = '';
+  document.getElementById('inFollowers').value  = '';
+  document.getElementById('inAvgViews').value   = '';
+  document.getElementById('inMemo').value       = '';
+  document.getElementById('inBaseType').value   = '';
+  document.getElementById('inBasePrice').value  = '';
+  document.getElementById('inBaseVat').checked  = true;
+  document.getElementById('inLic1m').value      = '';
+  document.getElementById('inLic3m').value      = '';
+  document.getElementById('inPriceMemo').value  = '';
+  document.getElementById('inNotice').value     = '';
+  resetProfileUI();
+
+  var selCats = [];
+
+  if (id) {
+    var tab = activeTab();
+    var inf = tab ? tab.influencers.find(function(x){ return x.id === id; }) : null;
+    if (inf) {
+      document.getElementById('inUsername').value   = inf.username   || '';
+      document.getElementById('inProfileUrl').value = inf.profileUrl || '';
+      document.getElementById('inFollowers').value  = inf.followers  || '';
+      document.getElementById('inAvgViews').value   = inf.avgViews   || '';
+      document.getElementById('inMemo').value       = inf.memo       || '';
+      if (inf.photo) { profileB64 = inf.photo; showProfilePreview(inf.photo); }
+      selCats = inf.categories ? inf.categories.slice() : [];
+      if (inf.pricing) {
+        var p = inf.pricing;
+        document.getElementById('inBaseType').value  = p.baseType  || '';
+        document.getElementById('inBasePrice').value = p.basePrice || '';
+        document.getElementById('inBaseVat').checked = p.baseVat !== false;
+        document.getElementById('inLic1m').value     = p.license1m || '';
+        document.getElementById('inLic3m').value     = p.license3m || '';
+        document.getElementById('inPriceMemo').value = p.memo      || '';
+        document.getElementById('inNotice').value    = p.notice    || '';
+      }
+      if (inf.contents) {
+        inf.contents.forEach(function(c,i) {
+          if (i < 3) cs[i] = {url:c.url||'',ytThumb:c.ytThumb||'',manualThumb:c.manualThumb||''};
+        });
+      }
+    }
+    document.getElementById('modalTitle').textContent = '인플루언서 편집';
+  } else {
+    document.getElementById('modalTitle').textContent = '인플루언서 추가';
+  }
+
+  renderCatCheckboxes(selCats);
+  renderContentInputs();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ─ Image compression ─ */
+function compressImage(file, maxPx, quality, cb) {
+  var img = new Image();
+  var objectUrl = URL.createObjectURL(file);
+  img.onload = function() {
+    var ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
+    var w = Math.max(1, Math.round(img.width  * ratio));
+    var h = Math.max(1, Math.round(img.height * ratio));
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(objectUrl);
+    cb(canvas.toDataURL('image/jpeg', quality));
+  };
+  img.onerror = function() {
+    URL.revokeObjectURL(objectUrl);
+    readFileB64(file, cb);
+  };
+  img.src = objectUrl;
+}
+
+/* ─ Profile image ─ */
+function resetProfileUI() {
+  var img = document.getElementById('profilePreviewImg');
+  img.src = ''; img.style.display = 'none';
+  document.getElementById('profileUploadIcon').style.display = '';
+  document.getElementById('profileUploadHint').textContent = '클릭하여 사진 업로드';
+  document.getElementById('profileFileInput').value = '';
+}
+function showProfilePreview(src) {
+  var img = document.getElementById('profilePreviewImg');
+  img.src = src; img.style.display = 'block';
+  document.getElementById('profileUploadIcon').style.display = 'none';
+  document.getElementById('profileUploadHint').textContent = '클릭하여 변경';
+}
+document.getElementById('profileFileInput').addEventListener('change', function() {
+  if (!this.files || !this.files[0]) return;
+  compressImage(this.files[0], 220, 0.75, function(b64){ profileB64 = b64; showProfilePreview(b64); });
+});
+
+/* ─ Categories ─ */
+function allCats() {
+  var extra = (appData.customCats||[]).filter(function(c){ return DEFAULT_CATS.indexOf(c)<0; });
+  return DEFAULT_CATS.concat(extra);
+}
+function renderCatCheckboxes(selected) {
+  var wrap = document.getElementById('catCheckboxes');
+  wrap.innerHTML = '';
+  allCats().forEach(function(cat) {
+    var lbl = document.createElement('label');
+    lbl.className = 'cat-cb-label' + (selected.indexOf(cat)>=0 ? ' checked' : '');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = cat; cb.checked = selected.indexOf(cat) >= 0;
+    cb.addEventListener('change', function(){ lbl.classList.toggle('checked', this.checked); });
+    lbl.appendChild(cb); lbl.appendChild(document.createTextNode(cat));
+    wrap.appendChild(lbl);
+  });
+}
+function getCheckedCats() {
+  return Array.from(document.querySelectorAll('#catCheckboxes input:checked')).map(function(i){ return i.value; });
+}
+function addCat() {
+  var input = document.getElementById('newCatInput');
+  var val = input.value.trim();
+  if (!val) return;
+  if (allCats().indexOf(val) < 0) {
+    if (!appData.customCats) appData.customCats = [];
+    appData.customCats.push(val);
+    saveData();
+  }
+  var checked = getCheckedCats();
+  if (checked.indexOf(val) < 0) checked.push(val);
+  renderCatCheckboxes(checked);
+  input.value = '';
+}
+document.getElementById('newCatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); addCat(); }
+});
+
+/* ─ Content inputs ─ */
+function ytThumb(url) {
+  var r = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([^&\n?#]{11})/;
+  var m = (url||'').match(r);
+  return m ? 'https://img.youtube.com/vi/' + m[1] + '/mqdefault.jpg' : '';
+}
+function renderContentInputs() {
+  var wrap = document.getElementById('contentInputsWrap');
+  wrap.innerHTML = '';
+  cs.forEach(function(c, i) {
+    var row = document.createElement('div');
+    row.className = 'content-link-item';
+
+    var num = document.createElement('div');
+    num.className = 'content-num'; num.textContent = i + 1;
+
+    var urlInput = document.createElement('input');
+    urlInput.type = 'url'; urlInput.className = 'form-input url-input';
+    urlInput.id = 'cUrl' + i; urlInput.value = c.url;
+    urlInput.placeholder = 'YouTube, 인스타, 틱톡 등 URL';
+    urlInput.addEventListener('input', function(){ onContentUrl(i, this.value); });
+
+    var thumbImg = document.createElement('img');
+    thumbImg.className = 'thumb-mini' + ((c.manualThumb||c.ytThumb) ? ' show' : '');
+    thumbImg.id = 'cThumb' + i; thumbImg.src = c.manualThumb || c.ytThumb || ''; thumbImg.alt = '';
+
+    var uploadLbl = document.createElement('label');
+    uploadLbl.className = 'btn-img-upload'; uploadLbl.title = '썸네일 직접 업로드';
+    uploadLbl.textContent = '📎';
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file'; fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', (function(idx){ return function() {
+      if (!this.files||!this.files[0]) return;
+      compressImage(this.files[0], 360, 0.75, function(b64){ cs[idx].manualThumb = b64; setThumbUI(idx, b64); });
+    }; })(i));
+    uploadLbl.appendChild(fileInput);
+
+    row.appendChild(num); row.appendChild(urlInput);
+    row.appendChild(thumbImg); row.appendChild(uploadLbl);
+    wrap.appendChild(row);
+  });
+}
+function onContentUrl(i, url) {
+  cs[i].url = url;
+  var yt = url ? ytThumb(url) : '';
+  cs[i].ytThumb = yt;
+  if (!cs[i].manualThumb) setThumbUI(i, yt);
+}
+function setThumbUI(i, src) {
+  var img = document.getElementById('cThumb' + i);
+  if (!img) return;
+  if (src) { img.src = src; img.classList.add('show'); }
+  else     { img.src = ''; img.classList.remove('show'); }
+}
+
+/* ─ Save influencer ─ */
+function saveInfluencer() {
+  var username = document.getElementById('inUsername').value.trim();
+  if (!username) { alert('인플루언서 아이디를 입력해주세요.'); document.getElementById('inUsername').focus(); return; }
+
+  cs.forEach(function(c, i) {
+    var el = document.getElementById('cUrl' + i);
+    if (el) { c.url = el.value.trim(); if (c.url && !c.ytThumb) c.ytThumb = ytThumb(c.url); }
+  });
+
+  var data = {
+    id:         editingId || uid(),
+    photo:      profileB64 || null,
+    username:   username,
+    profileUrl: document.getElementById('inProfileUrl').value.trim(),
+    categories: getCheckedCats(),
+    followers:  document.getElementById('inFollowers').value.trim(),
+    avgViews:   document.getElementById('inAvgViews').value.trim(),
+    memo:       document.getElementById('inMemo').value.trim(),
+    contents:   cs.map(function(c){ return {url:c.url,ytThumb:c.ytThumb,manualThumb:c.manualThumb}; }),
+    pricing: {
+      baseType:  document.getElementById('inBaseType').value.trim(),
+      basePrice: document.getElementById('inBasePrice').value.trim(),
+      baseVat:   document.getElementById('inBaseVat').checked,
+      license1m: document.getElementById('inLic1m').value.trim(),
+      license3m: document.getElementById('inLic3m').value.trim(),
+      memo:      document.getElementById('inPriceMemo').value.trim(),
+      notice:    document.getElementById('inNotice').value.trim()
+    }
+  };
+
+  var tab = activeTab();
+  if (!tab) return;
+
+  if (editingId) {
+    var idx = tab.influencers.findIndex(function(x){ return x.id === editingId; });
+    if (idx >= 0) tab.influencers[idx] = data; else tab.influencers.push(data);
+  } else {
+    tab.influencers.push(data);
+  }
+
+  saveData();
+  closeModal();
+  renderCards();
+}
+
+/* ─ Helpers ─ */
+function readFileB64(file, cb) {
+  var r = new FileReader();
+  r.onload = function(e){ cb(e.target.result); };
+  r.readAsDataURL(file);
+}
+
+/* ════════════ EXPORT / IMPORT ════════════ */
+function exportData() {
+  try {
+    var json = JSON.stringify(appData, null, 2);
+    var blob = new Blob([json], {type: 'application/json'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    var date = new Date().toISOString().slice(0,10);
+    a.href     = url;
+    a.download = 'vanillaco_backup_' + date + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✓ 백업 파일이 다운로드됐습니다');
+  } catch(e) {
+    alert('내보내기 실패: ' + e.message);
+  }
+}
+
+function importData() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = function() {
+    if (!this.files || !this.files[0]) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var parsed = JSON.parse(e.target.result);
+        if (!parsed.tabs) throw new Error('올바른 백업 파일이 아닙니다');
+        var total = parsed.tabs.reduce(function(sum, t){ return sum + (t.influencers ? t.influencers.length : 0); }, 0);
+        if (!confirm('백업 파일에서 ' + total + '명을 불러옵니다.\n현재 데이터는 덮어써집니다. 계속하시겠습니까?')) return;
+        appData = parsed;
+        saveData();
+        renderTabs();
+        renderCards();
+        showToast('✓ 데이터를 성공적으로 복원했습니다 (' + total + '명)');
+      } catch(e) {
+        alert('파일 읽기 실패: ' + e.message);
+      }
+    };
+    reader.readAsText(this.files[0]);
+  };
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
+}
+
+/* ════════════ TOAST ════════════ */
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ t.classList.add('show'); }); });
+  setTimeout(function(){
+    t.classList.remove('show');
+    setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 300);
+  }, 3200);
+}
+
+/* ════════════ GITHUB GIST ════════════ */
+var GH_TOKEN_KEY = 'vanillaco_gh_token';
+var GH_GIST_KEY  = 'vanillaco_gh_gist';
+
+function getGhToken()  { return localStorage.getItem(GH_TOKEN_KEY) || ''; }
+function getGhGistId() { return localStorage.getItem(GH_GIST_KEY)  || ''; }
+
+function openGhModal() {
+  document.getElementById('ghToken').value = getGhToken();
+  refreshGhStatus();
+  document.getElementById('ghOverlay').classList.add('open');
+}
+function closeGhModal() {
+  document.getElementById('ghOverlay').classList.remove('open');
+}
+document.getElementById('ghOverlay').addEventListener('click', function(e){ if(e.target===this) closeGhModal(); });
+
+function refreshGhStatus() {
+  var el     = document.getElementById('ghStatus');
+  var token  = getGhToken();
+  var gistId = getGhGistId();
+  if (token && gistId) {
+    el.style.display = '';
+    el.className = 'gh-status connected';
+    el.innerHTML = '✓ 연결됨 &nbsp;·&nbsp; <a href="https://gist.github.com/' + gistId + '" target="_blank" rel="noopener">Gist 보기 ↗</a>';
+    document.getElementById('ghBtn').classList.add('gh-connected');
+  } else if (token) {
+    el.style.display = '';
+    el.className = 'gh-status pending';
+    el.textContent = '토큰 입력됨 — "Gist에 저장"을 눌러 첫 동기화를 진행하세요';
+    document.getElementById('ghBtn').classList.remove('gh-connected');
+  } else {
+    el.style.display = 'none';
+    document.getElementById('ghBtn').classList.remove('gh-connected');
+  }
+}
+
+async function saveToGist() {
+  var token = document.getElementById('ghToken').value.trim();
+  if (!token) { showToast('⚠ 토큰을 입력해주세요'); return; }
+  localStorage.setItem(GH_TOKEN_KEY, token);
+
+  var gistId = getGhGistId();
+  var method = gistId ? 'PATCH' : 'POST';
+  var apiUrl  = 'https://api.github.com/gists' + (gistId ? '/' + gistId : '');
+
+  showToast('GitHub에 저장 중...');
+  try {
+    var resp = await fetch(apiUrl, {
+      method: method,
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: '바닐라코 인플루언서 리스트업',
+        public: true,
+        files: { 'vanillaco_influencers.json': { content: JSON.stringify(appData, null, 2) } }
+      })
+    });
+    if (!resp.ok) {
+      var err = await resp.json().catch(function(){ return {}; });
+      throw new Error((err.message || 'HTTP ' + resp.status));
+    }
+    var data = await resp.json();
+    localStorage.setItem(GH_GIST_KEY, data.id);
+    refreshGhStatus();
+    updateShareBtn();
+    showToast('✓ GitHub Gist에 저장됐습니다! 공유 링크 버튼을 확인하세요.');
+  } catch(e) {
+    showToast('저장 실패: ' + e.message + ' (토큰/권한 확인)');
+  }
+}
+
+async function loadFromGist() {
+  var token  = document.getElementById('ghToken').value.trim() || getGhToken();
+  var gistId = getGhGistId();
+  if (!token)  { showToast('⚠ 토큰을 입력해주세요'); return; }
+  if (!gistId) { showToast('⚠ 먼저 "Gist에 저장"으로 Gist를 생성해주세요'); return; }
+
+  showToast('Gist에서 불러오는 중...');
+  try {
+    var resp = await fetch('https://api.github.com/gists/' + gistId, {
+      headers: { 'Authorization': 'token ' + token }
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data    = await resp.json();
+    var file    = data.files['vanillaco_influencers.json'];
+    if (!file)  throw new Error('Gist에 데이터 파일이 없습니다');
+    var parsed  = JSON.parse(file.content);
+    if (!parsed.tabs) throw new Error('파일 형식이 올바르지 않습니다');
+    var total   = parsed.tabs.reduce(function(s,t){ return s+(t.influencers?t.influencers.length:0); }, 0);
+    if (!confirm('Gist에서 ' + total + '명의 데이터를 불러옵니다.\n현재 데이터를 덮어쓸까요?')) return;
+    appData = parsed;
+    saveData();
+    renderTabs();
+    renderCards();
+    closeGhModal();
+    showToast('✓ Gist에서 ' + total + '명을 불러왔습니다!');
+  } catch(e) {
+    showToast('불러오기 실패: ' + e.message);
+  }
+}
+
+/* ── Share link ── */
+function updateShareBtn() {
+  var btn = document.getElementById('shareBtn');
+  if (btn) btn.style.display = (!readOnlyMode && getGhGistId()) ? '' : 'none';
+}
+
+function copyShareLink() {
+  var gistId = getGhGistId();
+  if (!gistId) { showToast('⚠ 먼저 GitHub 버튼에서 Gist에 저장해주세요'); return; }
+  var base     = window.location.href.split('?')[0].split('#')[0];
+  var shareUrl = base + '?gist=' + gistId;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareUrl).then(function() {
+      showToast('✓ 공유 링크가 복사됐습니다! 팀원에게 붙여넣기로 전달하세요.');
+    }).catch(function() { fallbackCopy(shareUrl); });
+  } else {
+    fallbackCopy(shareUrl);
+  }
+}
+function fallbackCopy(url) {
+  var ta = document.createElement('textarea');
+  ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast('✓ 공유 링크가 복사됐습니다!');
+}
+
+/* ── Load from shared URL Gist ── */
+async function loadFromUrlGist() {
+  try {
+    showToast('공유 데이터를 불러오는 중...');
+    var resp = await fetch('https://api.github.com/gists/' + urlGistId);
+    if (!resp.ok) throw new Error('Gist를 찾을 수 없습니다 (URL 확인 필요)');
+    var data = await resp.json();
+    var file = data.files['vanillaco_influencers.json'];
+    if (!file) throw new Error('데이터 파일이 없습니다');
+    appData = JSON.parse(file.content);
+    validateAppData();
+    renderTabs();
+    renderCards();
+    showToast('✓ 공유 데이터를 불러왔습니다 (' + activeTab().influencers.length + '명)');
+  } catch(e) {
+    showToast('⚠ 공유 데이터 로드 실패: ' + e.message);
+  }
+}
+
+async function autoSyncToGist() {
+  var token  = getGhToken();
+  var gistId = getGhGistId();
+  if (!token || !gistId) return;
+  try {
+    await fetch('https://api.github.com/gists/' + gistId, {
+      method: 'PATCH',
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { 'vanillaco_influencers.json': { content: JSON.stringify(appData, null, 2) } } })
+    });
+  } catch(e) { /* silent — local save already succeeded */ }
+}
+
+/* ════════════ INIT ════════════ */
+loadData().then(function() {
+  if (readOnlyMode) {
+    /* Opened via share link — fetch data from Gist, show read-only UI */
+    document.getElementById('readonlyBanner').style.display = '';
+    document.getElementById('addInfBtn').style.display      = 'none';
+    document.getElementById('shareBtn').style.display       = 'none';
+    loadFromUrlGist();
+  } else {
+    refreshGhStatus();
+    updateShareBtn();
+    renderTabs();
+    renderCards();
+  }
+});
+</script>
+</body>
+</html>
